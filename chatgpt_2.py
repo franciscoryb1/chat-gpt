@@ -1,13 +1,34 @@
 import openai
 
-openai.api_key = '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'
+key = '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'
 
-completion = openai.ChatCompletion.create(
-    model='gpt-3.5-turbo',
-    messages=[{"role": "user", "content": "hi"}],
-    max_tokens=100,
-    stream=True
-)
+def chatgpt(api_key):
+    openai.api_key = api_key
+    chat_history = []
+    total_tokens_usage = 0
+    while True:
+        prompt = input('Ingresa un prompt:')
+        if prompt == 'exit':
+            break
+        else:
+            chat_history.append({'role': 'user', 'content': prompt})
 
-for part in completion:
-    print(part.choices[0]['delta']['content'])
+            completion = openai.ChatCompletion.create(
+                model='gpt-3.5-turbo',
+                messages=chat_history,
+                temperature=0.8,
+                max_tokens=10
+            )
+            print(completion)
+            usage = completion.usage["total_tokens"]
+            mensaje = completion.choices[0]['message']['content']
+            chat_history.append({'role': 'assistant', 'content': mensaje})
+            #print(mensaje)
+            #print('total tokens:', usage)
+            return mensaje, usage
+
+ch = chatgpt(key)
+mensaje = ch[0]
+usage = ch[1]
+print(f'mensaje: {mensaje}')
+print(f'uso: {usage}')
